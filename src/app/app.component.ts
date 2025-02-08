@@ -3,6 +3,7 @@ import { RouterModule } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { LoadingSpinnerComponent } from "./loading-spinner/loading-spinner/loading-spinner.component";
 import { LoadingService } from './services/loading.service';
+import { AuthService } from './services/auth.service';
 
 @Component({
   selector: 'app-root',
@@ -13,7 +14,8 @@ import { LoadingService } from './services/loading.service';
       <a routerLink="/">Home</a>
       <a routerLink="/products">Produtos</a>
       <a routerLink="/cart">Carrinho</a>
-      <a routerLink="/login">Login</a>
+      <a routerLink="/login" *ngIf="!authService.isLoggedIn()">Login</a>
+      <a (click)="logout()" *ngIf="authService.isLoggedIn()">Logout</a>
     </nav>
     <app-loading-spinner *ngIf="loading$ | async"></app-loading-spinner>
     <router-outlet></router-outlet>
@@ -29,12 +31,17 @@ import { LoadingService } from './services/loading.service';
       text-decoration: none;
       color: #007bff;
       font-weight: bold;
+      cursor: pointer;
     }`
   ]
 })
 export class AppComponent {
   loading$;
-  constructor(private loadingService: LoadingService) {
-  this.loading$ = this.loadingService.loading$;
+  constructor(private loadingService: LoadingService, public authService: AuthService) {
+    this.loading$ = this.loadingService.loading$;
+  }
+
+  logout() {
+    this.authService.logout();
   }
 }
